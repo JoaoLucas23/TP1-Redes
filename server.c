@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 
@@ -10,17 +11,17 @@
 
 void usage(int argc, char **argv) {
     printf("usage %s <v4|v6> <server port>\n", argv[0]);
-    printf("example: %s v4 51511\n");
+    printf("example: %s v4 51511\n", argv[0]);
     exit(EXIT_FAILURE);
 }
 
-void main(int argc, char **argv) {
+int main(int argc, char **argv) {
     if(argc < 3) {
         usage(argc, argv);
     }
 
     struct sockaddr_storage storage;
-    if((argv[1], argv[2], &storage) != 0) {
+    if(server_sockaddr_init(argv[1], argv[2], &storage) != 0) {
         usage(argc, argv);
     }
 
@@ -41,14 +42,15 @@ void main(int argc, char **argv) {
 
     char addrstr[BUFSZ];
     addrtostr(addr, addrstr, BUFSZ);
-    printf("cound to %s, waiting xonnections \n", addrstr);
+    printf("bound to %s, waiting xonnections \n", addrstr);
 
     while (1)
     {
         struct sockaddr_storage cstorage;
         struct sockaddr *caddr = (struct sockaddr *) (&cstorage);
+        socklen_t caddrlen = sizeof(cstorage);
 
-        int csock = accept(s, caddr, sizeof(cstorage));
+        int csock = accept(s, caddr, &caddrlen);
 
         if(csock == -1) {
             logexit("accept");
@@ -64,7 +66,7 @@ void main(int argc, char **argv) {
 
         printf("[msg] %s, %d bytes: %s\n", caddrstr,(int)count, buf);
 
-        sprintf(buf, "remote endpoint: %s\n", caddrstr);
+        sprintf(buf, "remote endpoint: %.1000s\n", caddrstr);
         count = send(csock, buf, strlen(buf)+1, 0);
         if(count != strlen(buf)+1) {
             logexit("send");
@@ -73,4 +75,4 @@ void main(int argc, char **argv) {
     }
 
     exit(EXIT_SUCCESS);
-}
+}  

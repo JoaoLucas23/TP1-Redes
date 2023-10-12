@@ -6,21 +6,17 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 
 #define BUFSZ 1024
 
 void usage(int argc, char **argv) {
     printf("usage %s <server IP> <server port>\n", argv[0]);
-    printf("example: %s 127.0.0.1 51511");
+    printf("example: %s 127.0.0.1 51511", argv[0]);
     exit(EXIT_FAILURE);
 }
 
-void logexit(const char *msg) {
-    perror(msg);
-    exit(EXIT_FAILURE);
-}
-
-void main(int argc, char **argv) {
+int main(int argc, char **argv) {
     if(argc < 3) {
         usage(argc, argv);
     }
@@ -71,7 +67,7 @@ void main(int argc, char **argv) {
     
     close(s);
 
-    printf("received %u bytes\n");
+    printf("received %u bytes\n", total);
     puts(buf);
 
     exit(EXIT_SUCCESS);
