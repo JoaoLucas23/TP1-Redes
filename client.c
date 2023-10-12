@@ -19,7 +19,7 @@ void logexit(const char *msg) {
 
 void main(int argc, char **argv) {
     if(argc < 3) {
-        usage();
+        usage(argc, argv);
     }
 
     int s;
@@ -28,7 +28,13 @@ void main(int argc, char **argv) {
         logexit("socket");
     } 
 
-    if (connect(s, addr, sizeof(addr)) != 0) {
+    struct sockaddr_storage storage;
+    if(addrparse(argv[1], argv[2], &storage) != 0) {
+        usage(argc, argv);
+    }
+    struct sockaddr *addr = (struct sockaddr *) (&storage);
+
+    if (connect(s, addr, sizeof(storage)) != 0) {
         logexit("connect");
     }
 
