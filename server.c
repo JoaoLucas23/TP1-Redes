@@ -31,6 +31,11 @@ int main(int argc, char **argv) {
         logexit("socket");
     } 
 
+    int enable=1;
+    if(setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) != 0) {
+        logexit("setsockopt");
+    }
+
     struct sockaddr *addr = (struct sockaddr *) (&storage);
 
     if(bind(s, addr, sizeof(storage)) != 0){
@@ -42,7 +47,7 @@ int main(int argc, char **argv) {
 
     char addrstr[BUFSZ];
     addrtostr(addr, addrstr, BUFSZ);
-    printf("bound to %s, waiting xonnections \n", addrstr);
+    printf("bound to %s, waiting connections \n", addrstr);
 
     while (1)
     {
