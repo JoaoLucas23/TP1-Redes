@@ -1,4 +1,5 @@
 #include "common.h"
+#include "game.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -8,6 +9,20 @@
 #include <sys/types.h>
 
 #define BUFSZ 1024
+
+int board_inicial[4][4];
+
+void le_tabuleiro_inicial(char* arquivo) {
+
+    FILE *arquivo_entrada = fopen(arquivo, "r");
+    // Lê os valores do arquivo e armazena na matriz board_inicial
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            fscanf(arquivo_entrada, "%d,", &board_inicial[i][j]);     
+        }
+    }
+
+}
 
 void usage(int argc, char **argv) {
     printf("usage %s <v4|v6> <server port>\n", argv[0]);

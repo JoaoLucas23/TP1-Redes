@@ -1,4 +1,5 @@
 #include "common.h"
+#include "game.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -15,6 +16,7 @@ void usage(int argc, char **argv) {
     printf("example: %s 127.0.0.1 51511", argv[0]);
     exit(EXIT_FAILURE);
 }
+
 
 int main(int argc, char **argv) {
     if(argc < 3) {
@@ -62,6 +64,8 @@ int main(int argc, char **argv) {
             // conexao fechada
             break;
         }
+        printf("Conteúdo do tabuleiro:\n");
+        print_board(board_atual);
         total += count;
     }
     
