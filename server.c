@@ -38,7 +38,7 @@ int atualiza_tabuleiro(struct action* mensagem) {
     {
         if(board_atual[linha][coluna] >= 0) {
             printf("error: already revealed\n");
-            return 1;
+            return 10;
         } if (board_inicial[linha][coluna] == -1) {
             return 0;
         }
@@ -47,10 +47,10 @@ int atualiza_tabuleiro(struct action* mensagem) {
     else if(mensagem->type==2) {
         if(board_atual[linha][coluna] == -3) {
             printf("error: cell already has a flag\n");
-            return 1;
+            return 23;
         } else if(board_atual[linha][coluna] >= 0) {
             printf("error: cannot insert flag in revealed cell\n");
-            return 1;
+            return 20;
         } else {
             board_atual[linha][coluna] = -3; 
         }
@@ -66,12 +66,10 @@ int verifica_vitoria() {
     {
         for (int j = 0; j < 4; j++)
         {
-
             if (board_inicial[i][j] != -1 && board_atual[i][j] == -2)
             {
                 return 0;
             }
-            
         }
     }
     return 1;
@@ -116,7 +114,6 @@ int main(int argc, char **argv) {
 
     char addrstr[BUFSZ];
     addrtostr(addr, addrstr, BUFSZ);
-    //printf("bound to %s, waiting connections \n", addrstr);
 
     le_tabuleiro_inicial(argv[4]);
 

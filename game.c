@@ -1,5 +1,15 @@
 #include "game.h"
 
+void inicia_tabuleiro(int tab[4][4]) {
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            tab[i][j] = -2;
+        }   
+    }   
+}
+
 void copia_tabuleiro(int src[4][4], int dst[4][4]) {
     for (int i = 0; i < 4; i++)
     {
@@ -87,12 +97,13 @@ void gera_resposta(struct action* mensagem, int tabuleiro_atual[4][4], int tabul
         return;
     }
     else if (mensagem->type == 5){
-        // reseta o tabuleiro
-        printf("starting new game");
+        inicia_tabuleiro(tabuleiro_atual);
+        printf("starting new game\n");
         return;
     }
     else if (mensagem-> type == 7) {
-        // encerra conexao
+        inicia_tabuleiro(tabuleiro_atual);
+        printf("client disconnected\n");
         return;
     }
     return;

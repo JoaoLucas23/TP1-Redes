@@ -2,11 +2,11 @@ FLUXO:
 1. servidor inicializa lendo tabuleiro do arquivo in.txt OK
 ‌2. cliente conecta e manda a mensagem start OK
 ‌3. tabuleiro inicial é printando no terminal do cliente OK
-‌4. cliente envia mensagem reveal 0,0
-‌5. se é bomba o servidor encerra o jogo
-‌6. se não é bomba imprime o tabuleiro com o número correspondente da coordenada 0,0
-‌7. mensagens transmitidas como inteiros
-‌8. mensagens imprimidas como strings
+‌4. cliente envia mensagem reveal 0,0 OK 
+‌5. se é bomba o servidor encerra o jogo OK 
+‌6. se não é bomba imprime o tabuleiro com o número correspondente da coordenada 0,0 OK
+‌7. mensagens transmitidas como inteiros OK
+‌8. mensagens imprimidas como strings OK
 ‌9. client deve rodar um loop de comandos
-‌10. servidor mantém a matriz inicial e a matriz atual
-‌11. sempre que uma ação é feita o servidor atualiza a matriz atual
+‌10. servidor mantém a matriz inicial e a matriz atual OK 
+‌11. sempre que uma ação é feita o servidor atualiza a matriz atual OK

@@ -11,6 +11,19 @@
 
 #define BUFSZ 1024
 
+void verifica_resultado(struct action* mensagem) {
+    switch (mensagem->type)
+    {
+    case 8:
+        printf("GAME OVER!\n");
+        break;
+    case 6:
+        printf("YOU WIN!\n");
+    default:
+        return;
+    }
+}
+
 void usage(int argc, char **argv) {
     printf("usage %s <server IP> <server port>\n", argv[0]);
     printf("example: %s 127.0.0.1 51511", argv[0]);
@@ -63,13 +76,10 @@ int main(int argc, char **argv) {
         }
 
         count = recv(s, mensagem, sizeof(struct action)+1, 0);
-        if(mensagem->type == 8) {
-            printf("GAME OVER!\n");
+        verifica_resultado(mensagem);
+        if(mensagem->type != 7){
+            imprime_tabuleiro(mensagem->board);
         }
-        if(mensagem->type == 6) {
-            printf("YOU WIN!\n");
-        }
-        imprime_tabuleiro(mensagem->board);
     }
     
     close(s);
