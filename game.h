@@ -15,4 +15,4 @@ void le_mensagem(char* acao, struct action* mensagem);
 
 void le_resposta(struct action* mensagem, int tabuleiro_atual[4][4]);
 
-void gera_resposta(struct action* mensagem, int tabuleiro_atual[4][4], int tabuleiro_inicial[4][4], int resultado);
+void gera_resposta(struct action* mensagem, int tabuleiro_atual[4][4], int tabuleiro_inicial[4][4], int resultado, int vitoria);

@@ -45,16 +45,18 @@ int main(int argc, char **argv) {
         char addrstr[BUFSZ];
 
         addrtostr(addr, addrstr, BUFSZ);
-        printf("connected to %s \n", addrstr);
+       // printf("connected to %s \n", addrstr);
 
         char buf[BUFSZ];
         memset(buf, 0, BUFSZ);
-        printf("mensagem> ");
+        //printf("mensagem> ");
         fgets(buf, BUFSZ-1, stdin);
 
         struct action* mensagem = malloc(sizeof(struct action));
         le_mensagem(buf, mensagem);
-
+        if(mensagem->coordinates[0] >= 4 || mensagem->coordinates[1] >= 4){
+            printf("o error: invalid cell\n");
+        }
         size_t count = send(s, mensagem, sizeof(struct action)+1 , 0);
         if(count != sizeof(struct action)+1) {
             logexit("send");

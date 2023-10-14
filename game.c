@@ -68,11 +68,17 @@ void le_mensagem(char* acao, struct action* mensagem) {
     }
 }
 
-void gera_resposta(struct action* mensagem, int tabuleiro_atual[4][4], int tabuleiro_inicial[4][4], int resultado) {
+void gera_resposta(struct action* mensagem, int tabuleiro_atual[4][4], int tabuleiro_inicial[4][4], int resultado, int vitoria) {
     if (!resultado)
     {
         copia_tabuleiro(tabuleiro_inicial,mensagem->board);
         mensagem->type = 8;
+        return;
+    }
+    else if (vitoria)
+    {
+        copia_tabuleiro(tabuleiro_inicial,mensagem->board);
+        mensagem->type = 6;
         return;
     }
     else if (mensagem->type == 0 || mensagem->type == 1 || mensagem->type == 2 || mensagem->type == 4) {
