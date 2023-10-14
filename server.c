@@ -1,5 +1,4 @@
 #include "common.h"
-#include "game.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -13,15 +12,17 @@
 int board_inicial[4][4];
 
 void le_tabuleiro_inicial(char* arquivo) {
-
     FILE *arquivo_entrada = fopen(arquivo, "r");
+
     // Lê os valores do arquivo e armazena na matriz board_inicial
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
-            fscanf(arquivo_entrada, "%d,", &board_inicial[i][j]);     
+                fscanf(arquivo_entrada,"%d,", &board_inicial[i][j]);
+                printf("%d\t", board_inicial[i][j]);
         }
+        printf("\n");
     }
-
+    fclose(arquivo_entrada);
 }
 
 void usage(int argc, char **argv) {
@@ -63,6 +64,8 @@ int main(int argc, char **argv) {
     char addrstr[BUFSZ];
     addrtostr(addr, addrstr, BUFSZ);
     printf("bound to %s, waiting connections \n", addrstr);
+
+    le_tabuleiro_inicial(argv[4]);
 
     while (1)
     {

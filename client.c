@@ -1,5 +1,4 @@
 #include "common.h"
-#include "game.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -64,8 +63,6 @@ int main(int argc, char **argv) {
             // conexao fechada
             break;
         }
-        printf("Conteúdo do tabuleiro:\n");
-        print_board(board_atual);
         total += count;
     }
     

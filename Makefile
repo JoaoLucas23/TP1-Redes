@@ -1,8 +1,7 @@
 all:
 	gcc -Wall -c common.c
-	gcc -Wall -c game.c
-	gcc -Wall client.c common.o game.o -o client
-	gcc -Wall server.c common.o game.o -o server
+	gcc -Wall client.c common.o -o client
+	gcc -Wall server.c common.o -o server
 
 game:
 	gcc -Wall -c game.c -o game
