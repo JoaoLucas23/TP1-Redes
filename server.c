@@ -36,24 +36,13 @@ int atualiza_tabuleiro(struct action* mensagem) {
 
     if (mensagem->type==1)
     {
-        if(board_atual[linha][coluna] >= 0) {
-            printf("error: already revealed\n");
-            return 10;
-        } if (board_inicial[linha][coluna] == -1) {
+        if (board_inicial[linha][coluna] == -1) {
             return 0;
         }
         board_atual[linha][coluna] = board_inicial[linha][coluna];
     }
     else if(mensagem->type==2) {
-        if(board_atual[linha][coluna] == -3) {
-            printf("error: cell already has a flag\n");
-            return 23;
-        } else if(board_atual[linha][coluna] >= 0) {
-            printf("error: cannot insert flag in revealed cell\n");
-            return 20;
-        } else {
             board_atual[linha][coluna] = -3; 
-        }
     }
     else if(mensagem->type==4) {
         board_atual[linha][coluna] = -2;
@@ -117,17 +106,19 @@ int main(int argc, char **argv) {
 
     le_tabuleiro_inicial(argv[4]);
 
+    struct action* mensagem = malloc(sizeof(struct action));
     int resultado = 1;
     int vitoria = 0;
 
+    int csock;
+
+    struct sockaddr_storage cstorage;
+    struct sockaddr *caddr = (struct sockaddr *) (&cstorage);
+    socklen_t caddrlen = sizeof(cstorage);
+
     while (1)
     {
-        struct sockaddr_storage cstorage;
-        struct sockaddr *caddr = (struct sockaddr *) (&cstorage);
-        socklen_t caddrlen = sizeof(cstorage);
-
-        int csock = accept(s, caddr, &caddrlen);
-
+        csock = accept(s, caddr, &caddrlen);
         if(csock == -1) {
             logexit("accept");
         }
@@ -135,24 +126,22 @@ int main(int argc, char **argv) {
         char caddrstr[BUFSZ];
         addrtostr(caddr, caddrstr, BUFSZ);
         printf("client connected\n");
-        
-        struct action* mensagem = malloc(sizeof(struct action));
- 
-        size_t count = recv(csock, mensagem, sizeof(struct action)+1, 0);
-
-        if (mensagem->type==1 || mensagem->type==2 || mensagem->type==4)
-        {
-            resultado = atualiza_tabuleiro(mensagem);
+        while (1)
+        {           
+            size_t count = recv(csock, mensagem, sizeof(struct action)+1, 0);
+            if (mensagem->type==1 || mensagem->type==2 || mensagem->type==4)
+            {
+                resultado = atualiza_tabuleiro(mensagem);
+            }
+            vitoria = verifica_vitoria();
+            gera_resposta(mensagem, board_atual, board_inicial, resultado, vitoria);
+            
+            count = send(csock, mensagem, sizeof(struct action)+1, 0);
+            if(count != sizeof(struct action)+1) {
+                logexit("send");
+            }
         }
-        vitoria = verifica_vitoria();
-        gera_resposta(mensagem, board_atual, board_inicial, resultado, vitoria);
-        
-        count = send(csock, mensagem, sizeof(struct action)+1, 0);
-        if(count != sizeof(struct action)+1) {
-            logexit("send");
-        }
-        close(csock);
     }
-
+    close(csock);
     exit(EXIT_SUCCESS);
 }  

@@ -53,31 +53,32 @@ int main(int argc, char **argv) {
         logexit("connect");
     }
 
+    char addrstr[BUFSZ];
+    addrtostr(addr, addrstr, BUFSZ);
+
     while (1)
     {
-        char addrstr[BUFSZ];
-
-        addrtostr(addr, addrstr, BUFSZ);
-       // printf("connected to %s \n", addrstr);
-
+        int erro = 0;
+        
         char buf[BUFSZ];
         memset(buf, 0, BUFSZ);
-        //printf("mensagem> ");
+        printf("mensagem> ");
         fgets(buf, BUFSZ-1, stdin);
 
         struct action* mensagem = malloc(sizeof(struct action));
         le_mensagem(buf, mensagem);
         if(mensagem->coordinates[0] >= 4 || mensagem->coordinates[1] >= 4){
-            printf("o error: invalid cell\n");
+            printf("error: invalid cell\n");
+            erro = 1;
         }
         size_t count = send(s, mensagem, sizeof(struct action)+1 , 0);
         if(count != sizeof(struct action)+1) {
             logexit("send");
         }
-
+        printf("erro: %d\n",erro);
         count = recv(s, mensagem, sizeof(struct action)+1, 0);
         verifica_resultado(mensagem);
-        if(mensagem->type != 7){
+        if(mensagem->type != 7 || erro == 0){
             imprime_tabuleiro(mensagem->board);
         }
     }
