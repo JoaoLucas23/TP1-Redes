@@ -12,19 +12,44 @@
 
 int board_inicial[4][4];
 
-char board_atual[4][4];
+int board_atual[4][4];
 
 void le_tabuleiro_inicial(char* arquivo) {
     FILE *arquivo_entrada = fopen(arquivo, "r");
 
-    // Lê os valores do arquivo e armazena na matriz board_inicial
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
+            // Lê os valores do arquivo e armazena na matriz board_inicial
             fscanf(arquivo_entrada,"%d,", &board_inicial[i][j]);
-            board_atual[i][j] = '-';
+            printf("%d\t\t", board_inicial[i][j]);
+            // incializa o board atual com o codigo da string '-'
+            board_atual[i][j] = -2;
         }
+        printf("\n");
     }
     fclose(arquivo_entrada);
+}
+
+int atualiza_tabuleiro(struct action* mensagem) {
+    int linha = mensagem->coordinates[0];
+    int coluna = mensagem->coordinates[1];
+
+    printf("tipo: %d - atualizando...:\nlinha = %d\ncoluna = %d\n",mensagem->type,linha,coluna);
+
+    if (mensagem->type==1)
+    {
+        board_atual[linha][coluna] = board_inicial[linha][coluna];
+        if (board_inicial[linha][coluna] == -1) {
+            return 0;
+        }
+    }
+    else if(mensagem->type==2) {
+        board_atual[linha][coluna] = -3; 
+    }
+    else if(mensagem->type==4) {
+        board_atual[linha][coluna] = -2;
+    } 
+    return 1;  
 }
 
 void usage(int argc, char **argv) {
@@ -68,7 +93,8 @@ int main(int argc, char **argv) {
     printf("bound to %s, waiting connections \n", addrstr);
 
     le_tabuleiro_inicial(argv[4]);
-    imprime_tabuleiro(board_atual);
+
+    int resultado = 1;
 
     while (1)
     {
@@ -84,17 +110,20 @@ int main(int argc, char **argv) {
 
         char caddrstr[BUFSZ];
         addrtostr(caddr, caddrstr, BUFSZ);
-        printf("[log] connection from %s\n", caddrstr);
-
-        char buf[BUFSZ];
-        memset(buf,0,BUFSZ);
-        size_t count = recv(csock, buf, BUFSZ, 0);
-
-        printf("[msg] %s, %d bytes: %s\n", caddrstr,(int)count, buf);
-
-        sprintf(buf, "remote endpoint: %.1000s\n", caddrstr);
-        count = send(csock, board_atual, sizeof(board_atual)+1, 0);
-        if(count != sizeof(board_atual)+1) {
+        printf("client connected\n");
+        
+        struct action* mensagem = malloc(sizeof(struct action));
+ 
+        size_t count = recv(csock, mensagem, sizeof(struct action)+1, 0);
+        if (count==sizeof(struct action)+1) printf("mensagem: %d\n",mensagem->type);
+        if (mensagem->type==1 || mensagem->type==2 || mensagem->type==4)
+        {
+            resultado = atualiza_tabuleiro(mensagem);
+        }
+        gera_resposta(mensagem, board_atual, resultado);
+        
+        count = send(csock, mensagem, sizeof(struct action)+1, 0);
+        if(count != sizeof(struct action)+1) {
             logexit("send");
         }
         close(csock);

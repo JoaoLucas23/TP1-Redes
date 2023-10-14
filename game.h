@@ -9,6 +9,10 @@ struct action {
     int board[4][4];
 };
 
-void imprime_tabuleiro(char board[4][4]);
+void imprime_tabuleiro(int board[4][4]);
 
 void le_mensagem(char* acao, struct action* mensagem);
+
+void le_resposta(struct action* mensagem, int tabuleiro_atual[4][4]);
+
+void gera_resposta(struct action* mensagem, int tabuleiro_atual[4][4], int resultado);

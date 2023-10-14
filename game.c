@@ -1,11 +1,37 @@
 #include "game.h"
 
-void imprime_tabuleiro(char board[4][4]) {
+void copia_tabuleiro(int src[4][4], int dst[4][4]) {
     for (int i = 0; i < 4; i++)
     {
         for (int j = 0; j < 4; j++)
         {
-            printf("%c\t\t", board[i][j]);
+            dst[i][j] = src[i][j];
+        }   
+    }   
+}
+
+char traduz_caracter(int cod) {
+    switch (cod)
+    {
+    case -1:
+        return '*';
+    case -2:
+        return '-';
+    case -3:
+        return '>';
+    case 0:
+        return '0';
+    default:
+        return (char)(cod+'0');
+    }
+}
+
+void imprime_tabuleiro(int board[4][4]) {
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            printf("%c\t\t", traduz_caracter(board[i][j]));
         }
         printf("\n"); 
     } 
@@ -40,4 +66,27 @@ void le_mensagem(char* acao, struct action* mensagem) {
         mensagem->coordinates[0] = atoi(strtok(NULL,","));
         mensagem->coordinates[1] = atoi(strtok(NULL,","));
     }
+}
+
+void gera_resposta(struct action* mensagem, int tabuleiro_atual[4][4], int resultado) {
+    if (!resultado)
+    {
+        // game over   
+    }
+    else if (mensagem->type == 0 || mensagem->type == 1 || mensagem->type == 2 || mensagem->type == 4) {
+        copia_tabuleiro(tabuleiro_atual, mensagem->board);
+        mensagem->type = 3;
+        return;
+    }
+    else if (mensagem->type == 5){
+        // reseta o tabuleiro
+        mensagem->type = 3;
+        return;
+    }
+    else if (mensagem-> type == 7) {
+        // encerra conexao
+        mensagem->type = 3;
+        return;
+    }
+    return;
 }

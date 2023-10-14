@@ -11,8 +11,6 @@
 
 #define BUFSZ 1024
 
-char tabuleiro_atual[4][4];
-
 void usage(int argc, char **argv) {
     printf("usage %s <server IP> <server port>\n", argv[0]);
     printf("example: %s 127.0.0.1 51511", argv[0]);
@@ -59,18 +57,17 @@ int main(int argc, char **argv) {
         printf("mensagem> ");
         fgets(buf, BUFSZ-1, stdin);
 
-        struct action* mensagem;
+        struct action* mensagem = malloc(sizeof(struct action));
         le_mensagem(buf, mensagem);
 
-        size_t count = send(s, buf, strlen(buf)+1, 0);
-        if(count != strlen(buf)+1) {
+        size_t count = send(s, mensagem, sizeof(struct action)+1 , 0);
+        if(count != sizeof(struct action)+1) {
             logexit("send");
         }
-        printf("%lu\n",count);
-        count = recv(s, tabuleiro_atual, sizeof(tabuleiro_atual)+1, 0);
 
-        printf("%lu\n",count);
-        imprime_tabuleiro(tabuleiro_atual);
+        count = recv(s, mensagem, sizeof(struct action)+1, 0);
+        printf("count recv: %lu\n",count);
+        imprime_tabuleiro(mensagem->board);
     }
     
     close(s);
