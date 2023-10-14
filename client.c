@@ -47,31 +47,32 @@ int main(int argc, char **argv) {
     addrtostr(addr, addrstr, BUFSZ);
     printf("connected to %s \n", addrstr);
 
-    char buf[BUFSZ];
-    memset(buf, 0, BUFSZ);
-    printf("mensagem> ");
-    fgets(buf, BUFSZ-1, stdin);
-    size_t count = send(s, buf, strlen(buf)+1, 0);
+    // memset(buf, 0, BUFSZ);
+    // printf("mensagem> ");
+    // fgets(buf, BUFSZ-1, stdin);
+    //   send(s, buf, strlen(buf)+1, 0);
 
-    if(count != strlen(buf)+1) {
-        logexit("send");
-    }
-
-    memset(buf, 0, BUFSZ);
-    unsigned total = 0;
     while (1)
     {
-        count = recv(s, tabuleiro_atual, BUFSZ - total, 0);
-        if(count == 0) {
-            // conexao fechada
-            break;
+        char buf[BUFSZ];
+        memset(buf, 0, BUFSZ);
+        printf("mensagem> ");
+        fgets(buf, BUFSZ-1, stdin);
+
+        struct action* mensagem;
+        le_mensagem(buf, mensagem);
+
+        size_t count = send(s, buf, strlen(buf)+1, 0);
+        if(count != strlen(buf)+1) {
+            logexit("send");
         }
-        total += count;
+        printf("%lu\n",count);
+        count = recv(s, tabuleiro_atual, sizeof(tabuleiro_atual)+1, 0);
+
+        printf("%lu\n",count);
+        imprime_tabuleiro(tabuleiro_atual);
     }
     
     close(s);
-
-    printf("received %u bytes\n", total);
-    imprime_tabuleiro(tabuleiro_atual);
     exit(EXIT_SUCCESS);
 }

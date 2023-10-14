@@ -93,8 +93,8 @@ int main(int argc, char **argv) {
         printf("[msg] %s, %d bytes: %s\n", caddrstr,(int)count, buf);
 
         sprintf(buf, "remote endpoint: %.1000s\n", caddrstr);
-        count = send(csock, board_atual, strlen(buf)+1, 0);
-        if(count != strlen(buf)+1) {
+        count = send(csock, board_atual, sizeof(board_atual)+1, 0);
+        if(count != sizeof(board_atual)+1) {
             logexit("send");
         }
         close(csock);
