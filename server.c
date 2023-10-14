@@ -1,4 +1,5 @@
 #include "common.h"
+#include "game.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -11,16 +12,17 @@
 
 int board_inicial[4][4];
 
+char board_atual[4][4];
+
 void le_tabuleiro_inicial(char* arquivo) {
     FILE *arquivo_entrada = fopen(arquivo, "r");
 
     // Lê os valores do arquivo e armazena na matriz board_inicial
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
-                fscanf(arquivo_entrada,"%d,", &board_inicial[i][j]);
-                printf("%d\t", board_inicial[i][j]);
+            fscanf(arquivo_entrada,"%d,", &board_inicial[i][j]);
+            board_atual[i][j] = '-';
         }
-        printf("\n");
     }
     fclose(arquivo_entrada);
 }
@@ -66,6 +68,7 @@ int main(int argc, char **argv) {
     printf("bound to %s, waiting connections \n", addrstr);
 
     le_tabuleiro_inicial(argv[4]);
+    imprime_tabuleiro(board_atual);
 
     while (1)
     {
@@ -90,7 +93,7 @@ int main(int argc, char **argv) {
         printf("[msg] %s, %d bytes: %s\n", caddrstr,(int)count, buf);
 
         sprintf(buf, "remote endpoint: %.1000s\n", caddrstr);
-        count = send(csock, buf, strlen(buf)+1, 0);
+        count = send(csock, board_atual, strlen(buf)+1, 0);
         if(count != strlen(buf)+1) {
             logexit("send");
         }

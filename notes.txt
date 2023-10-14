@@ -1,7 +1,7 @@
 FLUXO:
 1. servidor inicializa lendo tabuleiro do arquivo in.txt OK
-‌2. cliente conecta e manda a mensagem start
-‌3. tabuleiro inicial é printando no terminal do cliente
+‌2. cliente conecta e manda a mensagem start OK
+‌3. tabuleiro inicial é printando no terminal do cliente OK
 ‌4. cliente envia mensagem reveal 0,0
 ‌5. se é bomba o servidor encerra o jogo
 ‌6. se não é bomba imprime o tabuleiro com o número correspondente da coordenada 0,0

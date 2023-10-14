@@ -1,4 +1,5 @@
 #include "common.h"
+#include "game.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -9,6 +10,8 @@
 #include <unistd.h>
 
 #define BUFSZ 1024
+
+char tabuleiro_atual[4][4];
 
 void usage(int argc, char **argv) {
     printf("usage %s <server IP> <server port>\n", argv[0]);
@@ -58,7 +61,7 @@ int main(int argc, char **argv) {
     unsigned total = 0;
     while (1)
     {
-        count = recv(s, buf + total, BUFSZ - total, 0);
+        count = recv(s, tabuleiro_atual, BUFSZ - total, 0);
         if(count == 0) {
             // conexao fechada
             break;
@@ -69,7 +72,6 @@ int main(int argc, char **argv) {
     close(s);
 
     printf("received %u bytes\n", total);
-    puts(buf);
-
+    imprime_tabuleiro(tabuleiro_atual);
     exit(EXIT_SUCCESS);
 }
