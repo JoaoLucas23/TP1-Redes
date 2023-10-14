@@ -40,18 +40,13 @@ int main(int argc, char **argv) {
         logexit("connect");
     }
 
-    char addrstr[BUFSZ];
-
-    addrtostr(addr, addrstr, BUFSZ);
-    printf("connected to %s \n", addrstr);
-
-    // memset(buf, 0, BUFSZ);
-    // printf("mensagem> ");
-    // fgets(buf, BUFSZ-1, stdin);
-    //   send(s, buf, strlen(buf)+1, 0);
-
     while (1)
     {
+        char addrstr[BUFSZ];
+
+        addrtostr(addr, addrstr, BUFSZ);
+        printf("connected to %s \n", addrstr);
+
         char buf[BUFSZ];
         memset(buf, 0, BUFSZ);
         printf("mensagem> ");
@@ -66,7 +61,12 @@ int main(int argc, char **argv) {
         }
 
         count = recv(s, mensagem, sizeof(struct action)+1, 0);
-        printf("count recv: %lu\n",count);
+        if(mensagem->type == 8) {
+            printf("GAME OVER!\n");
+        }
+        if(mensagem->type == 6) {
+            printf("YOU WIN!\n");
+        }
         imprime_tabuleiro(mensagem->board);
     }
     

@@ -34,17 +34,26 @@ int atualiza_tabuleiro(struct action* mensagem) {
     int linha = mensagem->coordinates[0];
     int coluna = mensagem->coordinates[1];
 
-    printf("tipo: %d - atualizando...:\nlinha = %d\ncoluna = %d\n",mensagem->type,linha,coluna);
-
+    if(linha >= 4 || coluna >= 4){
+        printf("o error: invalid cell");
+    }
     if (mensagem->type==1)
     {
-        board_atual[linha][coluna] = board_inicial[linha][coluna];
-        if (board_inicial[linha][coluna] == -1) {
+        if(board_atual[linha][coluna] == board_inicial[linha][coluna]) {
+            printf("error: invalid cell");
+        } else if (board_inicial[linha][coluna] == -1) {
             return 0;
         }
+        board_atual[linha][coluna] = board_inicial[linha][coluna];
     }
     else if(mensagem->type==2) {
-        board_atual[linha][coluna] = -3; 
+        if(board_atual[linha][coluna] == board_inicial[linha][coluna]) {
+            printf("error: cell already has a flag");
+        } else if(board_atual[linha][coluna] >= 0) {
+            printf("error: cannot insert flag in revealed cell");
+        } else {
+            board_atual[linha][coluna] = -3; 
+        }
     }
     else if(mensagem->type==4) {
         board_atual[linha][coluna] = -2;
@@ -84,7 +93,7 @@ int main(int argc, char **argv) {
     if(bind(s, addr, sizeof(storage)) != 0){
         logexit("bind");
     }
-    if(listen(s, 10) != 0){ //quantidade de conexoes pendentes para tratamento
+    if(listen(s, 100) != 0){ //quantidade de conexoes pendentes para tratamento
         logexit("listen");
     }
 
@@ -115,12 +124,12 @@ int main(int argc, char **argv) {
         struct action* mensagem = malloc(sizeof(struct action));
  
         size_t count = recv(csock, mensagem, sizeof(struct action)+1, 0);
-        if (count==sizeof(struct action)+1) printf("mensagem: %d\n",mensagem->type);
+
         if (mensagem->type==1 || mensagem->type==2 || mensagem->type==4)
         {
             resultado = atualiza_tabuleiro(mensagem);
         }
-        gera_resposta(mensagem, board_atual, resultado);
+        gera_resposta(mensagem, board_atual, board_inicial, resultado);
         
         count = send(csock, mensagem, sizeof(struct action)+1, 0);
         if(count != sizeof(struct action)+1) {
