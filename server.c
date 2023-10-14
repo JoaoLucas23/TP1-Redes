@@ -16,6 +16,9 @@ int board_atual[4][4];
 
 void le_tabuleiro_inicial(char* arquivo) {
     FILE *arquivo_entrada = fopen(arquivo, "r");
+        if (arquivo_entrada == NULL) {
+        perror("Erro ao abrir o arquivo");
+    }
 
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
@@ -133,9 +136,10 @@ int main(int argc, char **argv) {
             {
                 resultado = atualiza_tabuleiro(mensagem);
             }
+
             vitoria = verifica_vitoria();
             gera_resposta(mensagem, board_atual, board_inicial, resultado, vitoria);
-            
+
             count = send(csock, mensagem, sizeof(struct action)+1, 0);
             if(count != sizeof(struct action)+1) {
                 logexit("send");

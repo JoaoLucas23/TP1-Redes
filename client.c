@@ -11,16 +11,17 @@
 
 #define BUFSZ 1024
 
-void verifica_resultado(struct action* mensagem) {
+int verifica_fim(struct action* mensagem) {
     switch (mensagem->type)
     {
     case 8:
         printf("GAME OVER!\n");
-        break;
+        return 1;
     case 6:
         printf("YOU WIN!\n");
+        return 1;
     default:
-        return;
+        return 0;
     }
 }
 
@@ -62,24 +63,35 @@ int main(int argc, char **argv) {
         
         char buf[BUFSZ];
         memset(buf, 0, BUFSZ);
-        printf("mensagem> ");
         fgets(buf, BUFSZ-1, stdin);
 
         struct action* mensagem = malloc(sizeof(struct action));
         le_mensagem(buf, mensagem);
-        if(mensagem->coordinates[0] >= 4 || mensagem->coordinates[1] >= 4){
+        if (mensagem->type == -1)
+        {
+            printf("error: command not found\n");
+            erro = 1;
+        }
+        else if(mensagem->coordinates[0] >= 4 || mensagem->coordinates[1] >= 4){
             printf("error: invalid cell\n");
             erro = 1;
         }
+        else if(mensagem->type == 7) {
+            break;
+        }
+
         size_t count = send(s, mensagem, sizeof(struct action)+1 , 0);
         if(count != sizeof(struct action)+1) {
             logexit("send");
         }
-        printf("erro: %d\n",erro);
+
         count = recv(s, mensagem, sizeof(struct action)+1, 0);
-        verifica_resultado(mensagem);
-        if(mensagem->type != 7 || erro == 0){
+        printf("%d\n",erro);
+        if(mensagem->type != 7 && erro == 0){
             imprime_tabuleiro(mensagem->board);
+        }
+        if(verifica_fim(mensagem)){
+            break;
         }
     }
     
