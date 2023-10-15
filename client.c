@@ -56,7 +56,7 @@ int verifica_erro(struct action* mensagem) {
 }
 
 void usage(int argc, char **argv) {
-    printf("usage %s <server IP> <server port>\n", argv[0]);
+    printf("usage %s <%s> <%s>\n", argv[0],argv[1],argv[2]);
     printf("example: %s 127.0.0.1 51511", argv[0]);
     exit(EXIT_FAILURE);
 }
@@ -88,7 +88,6 @@ int main(int argc, char **argv) {
     addrtostr(addr, addrstr, BUFSZ);
 
     struct action* mensagem = malloc(sizeof(struct action));
-    int fim = 0;
     int erro = 0;
 
     while (1)
