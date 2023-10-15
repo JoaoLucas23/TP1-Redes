@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
         logexit("socket");
     } 
 
-    int enable=1;
+    int enable=0;
     if(setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) != 0) {
         logexit("setsockopt");
     }
@@ -100,7 +100,7 @@ int main(int argc, char **argv) {
     if(bind(s, addr, sizeof(storage)) != 0){
         logexit("bind");
     }
-    if(listen(s, 100) != 0){ //quantidade de conexoes pendentes para tratamento
+    if(listen(s, 10) != 0){ //quantidade de conexoes pendentes para tratamento
         logexit("listen");
     }
 
@@ -138,6 +138,7 @@ int main(int argc, char **argv) {
             }
 
             vitoria = verifica_vitoria();
+            
             gera_resposta(mensagem, board_atual, board_inicial, resultado, vitoria);
 
             count = send(csock, mensagem, sizeof(struct action)+1, 0);
@@ -147,5 +148,5 @@ int main(int argc, char **argv) {
         }
     }
     close(csock);
-    exit(EXIT_SUCCESS);
+    //exit(EXIT_SUCCESS);
 }  

@@ -25,6 +25,36 @@ int verifica_fim(struct action* mensagem) {
     }
 }
 
+int verifica_erro(struct action* mensagem) {
+    int linha = mensagem->coordinates[0];
+    int coluna = mensagem->coordinates[1];
+    if (mensagem->type == -1)
+    {
+        printf("error: command not found\n");
+        return 1;
+    }
+    else if(linha >= 4 || coluna >= 4){
+        printf("error: invalid cell\n");
+        return 1;
+    }
+    else if (mensagem->board[linha][coluna] >= 0 && mensagem->type==1)
+    {
+        printf("error: cell already revealed\n");
+        return 1;
+    }
+    else if (mensagem->board[linha][coluna] >= 0 && mensagem->type==2)
+    {
+        printf("error: cannot insert flag in revealed cell\n");
+        return 1;
+    }
+        else if (mensagem->board[linha][coluna] == -3 && mensagem->type==2)
+    {
+        printf("error: cell already has a flag\n");
+        return 1;
+    }
+    return 0;
+}
+
 void usage(int argc, char **argv) {
     printf("usage %s <server IP> <server port>\n", argv[0]);
     printf("example: %s 127.0.0.1 51511", argv[0]);
@@ -57,28 +87,19 @@ int main(int argc, char **argv) {
     char addrstr[BUFSZ];
     addrtostr(addr, addrstr, BUFSZ);
 
+    struct action* mensagem = malloc(sizeof(struct action));
+    int fim = 0;
+    int erro = 0;
+
     while (1)
-    {
-        int erro = 0;
-        
+    {   
         char buf[BUFSZ];
         memset(buf, 0, BUFSZ);
         fgets(buf, BUFSZ-1, stdin);
 
-        struct action* mensagem = malloc(sizeof(struct action));
         le_mensagem(buf, mensagem);
-        if (mensagem->type == -1)
-        {
-            printf("error: command not found\n");
-            erro = 1;
-        }
-        else if(mensagem->coordinates[0] >= 4 || mensagem->coordinates[1] >= 4){
-            printf("error: invalid cell\n");
-            erro = 1;
-        }
-        else if(mensagem->type == 7) {
-            break;
-        }
+
+        erro = verifica_erro(mensagem);
 
         size_t count = send(s, mensagem, sizeof(struct action)+1 , 0);
         if(count != sizeof(struct action)+1) {
@@ -86,12 +107,21 @@ int main(int argc, char **argv) {
         }
 
         count = recv(s, mensagem, sizeof(struct action)+1, 0);
-        printf("%d\n",erro);
-        if(mensagem->type != 7 && erro == 0){
-            imprime_tabuleiro(mensagem->board);
+        if(count != sizeof(struct action)+1){
+            logexit("receive");
         }
-        if(verifica_fim(mensagem)){
+        if (mensagem->type == 7)
+        {
             break;
+        }
+
+        if(erro == 0){
+            fim = verifica_fim(mensagem);
+            imprime_tabuleiro(mensagem->board);
+            if (fim)
+            {
+                break;
+            } 
         }
     }
     
