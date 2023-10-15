@@ -85,45 +85,46 @@ int main(int argc, char **argv) {
 
     le_tabuleiro_inicial(argv[4]);
 
-    struct action* mensagem = malloc(sizeof(struct action));
-
     int s;
     s = socket(storage.ss_family, SOCK_STREAM, 0);
     if(s==-1){
         logexit("socket");
     }
 
-    int enable =0;
-    if(0!=setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int))){
+    int enable=1;
+    if(setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) != 0) {
         logexit("setsockopt");
     }
-    struct sockaddr* addr = (struct sockaddr*)(&storage);
-    if (0!=bind(s, addr, sizeof(storage))){
+
+    struct sockaddr *addr = (struct sockaddr *) (&storage);
+
+    if(bind(s, addr, sizeof(storage)) != 0){
         logexit("bind");
     }
-
-    if(0!=listen(s, 10)){
+    if(listen(s, 10) != 0){ //quantidade de conexoes pendentes para tratamento
         logexit("listen");
     }
 
     char addrstr[BUFSZ];
     addrtostr(addr, addrstr, BUFSZ);
-    //printf("bound to %s, waiting connections\n", addrstr);
-    int csock;
-    struct sockaddr_storage cstorage;
-    struct sockaddr* caddr = (struct sockaddr*)(&cstorage);
-    socklen_t caddrlen = sizeof(cstorage);
 
     while (1)
     {
+        struct action* mensagem = malloc(sizeof(struct action));
+
+        int csock;
+        struct sockaddr_storage cstorage;
+        struct sockaddr* caddr = (struct sockaddr*)(&cstorage);
+        socklen_t caddrlen = sizeof(cstorage);
+
         csock = accept(s, caddr,&caddrlen);
         if(csock==-1){
             logexit("accept");
         }
         char caddrstr[BUFSZ];
         addrtostr(caddr, caddrstr, BUFSZ);
-
         printf("client connected\n");
+
         while (1)
         {
             int resultado = 1;
@@ -143,7 +144,11 @@ int main(int argc, char **argv) {
             if(count != sizeof(struct action)) {
                 logexit("send");
             }
+            if (mensagem->type==7)
+            {
+                break;
+            }
         }
+        close(csock);
     }
-    close(csock);
 }
