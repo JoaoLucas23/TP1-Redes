@@ -11,17 +11,17 @@
 
 #define BUFSZ 1024
 
-int verifica_fim(struct action* mensagem) {
+void verifica_fim(struct action* mensagem) {
     switch (mensagem->type)
     {
     case 8:
         printf("GAME OVER!\n");
-        return 1;
+        break;
     case 6:
         printf("YOU WIN!\n");
-        return 1;
+        break;
     default:
-        return 0;
+        break;
     }
 }
 
@@ -106,22 +106,12 @@ int main(int argc, char **argv) {
             logexit("send");
         }
 
+        if (mensagem->type == 7) break;
         count = recv(s, mensagem, sizeof(struct action)+1, 0);
-        if(count != sizeof(struct action)+1){
-            logexit("receive");
-        }
-        if (mensagem->type == 7)
-        {
-            break;
-        }
 
         if(erro == 0){
-            fim = verifica_fim(mensagem);
+            verifica_fim(mensagem);
             imprime_tabuleiro(mensagem->board);
-            if (fim)
-            {
-                break;
-            } 
         }
     }
     

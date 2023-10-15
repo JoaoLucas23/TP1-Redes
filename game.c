@@ -91,14 +91,22 @@ void gera_resposta(struct action* mensagem, int tabuleiro_atual[4][4], int tabul
         mensagem->type = 6;
         return;
     }
-    else if (mensagem->type == 0 || mensagem->type == 1 || mensagem->type == 2 || mensagem->type == 4) {
+    else if (mensagem->type == 0){
+        inicia_tabuleiro(tabuleiro_atual);
+        inicia_tabuleiro(mensagem->board);
+        mensagem->type = 3;
+        return;
+    }
+    else if (mensagem->type == 1 || mensagem->type == 2 || mensagem->type == 4) {
         copia_tabuleiro(tabuleiro_atual, mensagem->board);
         mensagem->type = 3;
         return;
     }
     else if (mensagem->type == 5){
         inicia_tabuleiro(tabuleiro_atual);
+        inicia_tabuleiro(mensagem->board);
         printf("starting new game\n");
+        mensagem->type = 3;
         return;
     }
     else if (mensagem-> type == 7) {

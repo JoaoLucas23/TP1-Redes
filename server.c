@@ -45,12 +45,12 @@ int atualiza_tabuleiro(struct action* mensagem) {
         board_atual[linha][coluna] = board_inicial[linha][coluna];
     }
     else if(mensagem->type==2) {
-            board_atual[linha][coluna] = -3; 
+        board_atual[linha][coluna] = -3;
     }
     else if(mensagem->type==4) {
         board_atual[linha][coluna] = -2;
-    } 
-    return 1;  
+    }
+    return 1;
 }
 
 int verifica_vitoria() {
@@ -67,7 +67,6 @@ int verifica_vitoria() {
     return 1;
 }
 
-
 void usage(int argc, char **argv) {
     printf("usage %s <v4|v6> <server port>\n", argv[0]);
     printf("example: %s v4 51511\n", argv[0]);
@@ -75,7 +74,7 @@ void usage(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-    if(argc < 3) {
+    if(argc < 5) {
         usage(argc, argv);
     }
 
@@ -84,11 +83,15 @@ int main(int argc, char **argv) {
         usage(argc, argv);
     }
 
+    le_tabuleiro_inicial(argv[4]);
+
+    struct action* mensagem = malloc(sizeof(struct action));
+
     int s;
     s = socket(storage.ss_family, SOCK_STREAM, 0);
     if (s == -1) {
         logexit("socket");
-    } 
+    }
 
     int enable=0;
     if(setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) != 0) {
@@ -100,21 +103,14 @@ int main(int argc, char **argv) {
     if(bind(s, addr, sizeof(storage)) != 0){
         logexit("bind");
     }
-    if(listen(s, 10) != 0){ //quantidade de conexoes pendentes para tratamento
+    if(listen(s, 10) != 0){
         logexit("listen");
     }
 
     char addrstr[BUFSZ];
     addrtostr(addr, addrstr, BUFSZ);
 
-    le_tabuleiro_inicial(argv[4]);
-
-    struct action* mensagem = malloc(sizeof(struct action));
-    int resultado = 1;
-    int vitoria = 0;
-
     int csock;
-
     struct sockaddr_storage cstorage;
     struct sockaddr *caddr = (struct sockaddr *) (&cstorage);
     socklen_t caddrlen = sizeof(cstorage);
@@ -130,7 +126,9 @@ int main(int argc, char **argv) {
         addrtostr(caddr, caddrstr, BUFSZ);
         printf("client connected\n");
         while (1)
-        {           
+        {
+            int resultado = 1;
+            int vitoria = 0;
             size_t count = recv(csock, mensagem, sizeof(struct action)+1, 0);
             if (mensagem->type==1 || mensagem->type==2 || mensagem->type==4)
             {
@@ -138,7 +136,7 @@ int main(int argc, char **argv) {
             }
 
             vitoria = verifica_vitoria();
-            
+
             gera_resposta(mensagem, board_atual, board_inicial, resultado, vitoria);
 
             count = send(csock, mensagem, sizeof(struct action)+1, 0);
@@ -148,5 +146,4 @@ int main(int argc, char **argv) {
         }
     }
     close(csock);
-    //exit(EXIT_SUCCESS);
-}  
+}
