@@ -101,13 +101,13 @@ int main(int argc, char **argv) {
 
         erro = verifica_erro(mensagem);
 
-        size_t count = send(s, mensagem, sizeof(struct action)+1 , 0);
-        if(count != sizeof(struct action)+1) {
+        size_t count = send(s, mensagem, sizeof(struct action), 0);
+        if(count != sizeof(struct action)) {
             logexit("send");
         }
 
         if (mensagem->type == 7) break;
-        count = recv(s, mensagem, sizeof(struct action)+1, 0);
+        count = recv(s, mensagem, sizeof(struct action), 0);
 
         if(erro == 0){
             verifica_fim(mensagem);

@@ -89,58 +89,58 @@ int main(int argc, char **argv) {
 
     int s;
     s = socket(storage.ss_family, SOCK_STREAM, 0);
-    if (s == -1) {
+    if(s==-1){
         logexit("socket");
     }
 
-    int enable=0;
-    if(setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) != 0) {
+    int enable =0;
+    if(0!=setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int))){
         logexit("setsockopt");
     }
-
-    struct sockaddr *addr = (struct sockaddr *) (&storage);
-
-    if(bind(s, addr, sizeof(storage)) != 0){
+    struct sockaddr* addr = (struct sockaddr*)(&storage);
+    if (0!=bind(s, addr, sizeof(storage))){
         logexit("bind");
     }
-    if(listen(s, 10) != 0){
+
+    if(0!=listen(s, 10)){
         logexit("listen");
     }
 
     char addrstr[BUFSZ];
     addrtostr(addr, addrstr, BUFSZ);
-
+    //printf("bound to %s, waiting connections\n", addrstr);
     int csock;
     struct sockaddr_storage cstorage;
-    struct sockaddr *caddr = (struct sockaddr *) (&cstorage);
+    struct sockaddr* caddr = (struct sockaddr*)(&cstorage);
     socklen_t caddrlen = sizeof(cstorage);
 
     while (1)
     {
-        csock = accept(s, caddr, &caddrlen);
-        if(csock == -1) {
+        csock = accept(s, caddr,&caddrlen);
+        if(csock==-1){
             logexit("accept");
         }
-
         char caddrstr[BUFSZ];
         addrtostr(caddr, caddrstr, BUFSZ);
+
         printf("client connected\n");
         while (1)
         {
             int resultado = 1;
             int vitoria = 0;
-            size_t count = recv(csock, mensagem, sizeof(struct action)+1, 0);
+
+            size_t count = recv(csock, mensagem, sizeof(struct action), 0);
+
             if (mensagem->type==1 || mensagem->type==2 || mensagem->type==4)
             {
                 resultado = atualiza_tabuleiro(mensagem);
+                vitoria = verifica_vitoria();
             }
-
-            vitoria = verifica_vitoria();
 
             gera_resposta(mensagem, board_atual, board_inicial, resultado, vitoria);
 
-            count = send(csock, mensagem, sizeof(struct action)+1, 0);
-            if(count != sizeof(struct action)+1) {
+            count = send(csock, mensagem, sizeof(struct action), 0);
+            if(count != sizeof(struct action)) {
                 logexit("send");
             }
         }
