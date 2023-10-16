@@ -8,4 +8,4 @@ game:
 	gcc -Wall -c game.c -o game
 
 clean:
-	rm -f client server game game.o common.o
+	rm -f ./bin/client ./bin/server game game.o common.o
